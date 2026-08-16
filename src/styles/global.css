@@ -1,0 +1,311 @@
+/* ===================================================================
+   RS PKU MUHAMMADIYAH GRABAG - CHATBOT DESIGN SYSTEM
+   Theme: Modern Healthcare / Emerald Islamic Aesthetic
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+  /* Color Palette */
+  --primary-50: #e8f7f3;
+  --primary-100: #c5ece1;
+  --primary-200: #93dcce;
+  --primary-300: #59c5b6;
+  --primary-400: #2ea79b;
+  --primary-500: #0d7c66; /* Main PKU Brand Emerald */
+  --primary-600: #0b6856;
+  --primary-700: #0a5446;
+  --primary-800: #094339;
+  --primary-900: #073830;
+  
+  --accent-gold: #f59e0b;
+  --accent-gold-light: #fef3c7;
+  --accent-red: #ef4444;
+  --accent-red-light: #fee2e2;
+  --accent-blue: #0284c7;
+  --accent-blue-light: #e0f2fe;
+
+  --surface-bg: #f3f7f6;
+  --surface-card: #ffffff;
+  --surface-card-subtle: #f8fafc;
+  --surface-border: #e2e8f0;
+  --surface-border-subtle: #edf2f7;
+
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --text-inverse: #ffffff;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(13, 124, 102, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px -5px rgba(13, 124, 102, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 35px -10px rgba(13, 124, 102, 0.18), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(13, 124, 102, 0.25);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Reset & Base */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-main);
+  background-color: var(--surface-bg);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(13, 124, 102, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(65, 179, 162, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 50%, rgba(232, 247, 243, 0.5) 0px, transparent 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Helpers */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+p {
+  line-height: 1.6;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-200);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-400);
+}
+
+/* Container */
+.app-container {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 640px) {
+  .app-container {
+    padding: 8px 10px;
+  }
+}
+
+/* Main Grid Layout */
+.main-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  flex: 1;
+  margin-top: 14px;
+  min-height: 0;
+}
+
+@media (max-width: 900px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .sidebar-panel {
+    display: none; /* In mobile, access via quick modal / drawer */
+  }
+}
+
+/* Glassmorphism Card Style */
+.glass-card {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(13, 124, 102, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(13, 124, 102, 0); }
+}
+
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-bounce) forwards;
+}
+
+/* Typing Indicator */
+.typing-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  border-bottom-left-radius: 4px;
+  width: fit-content;
+  box-shadow: var(--shadow-sm);
+}
+
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  background-color: var(--primary-500);
+  border-radius: 50%;
+  animation: typingBounce 1.2s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+  background-color: var(--primary-400);
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+  background-color: var(--primary-300);
+}
+
+/* Quick prompt chips */
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--surface-card);
+  border: 1px solid var(--primary-100);
+  color: var(--primary-700);
+  font-size: 0.825rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.chip-btn:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-400);
+  color: var(--primary-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.chip-btn:active {
+  transform: translateY(0);
+}
+
+/* Message Formatting */
+.msg-content {
+  line-height: 1.55;
+  font-size: 0.925rem;
+  word-break: break-word;
+}
+
+.msg-content p {
+  margin-bottom: 8px;
+}
+
+.msg-content p:last-child {
+  margin-bottom: 0;
+}
+
+.msg-content ul, .msg-content ol {
+  margin: 6px 0 6px 18px;
+}
+
+.msg-content li {
+  margin-bottom: 4px;
+}
+
+.msg-content strong {
+  color: inherit;
+  font-weight: 700;
+}
+
+.msg-content a {
+  color: var(--primary-700);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* Interactive Doctor Table rendered in chat */
+.chat-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.chat-table th {
+  background: var(--primary-500);
+  color: white;
+  padding: 6px 10px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.chat-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--surface-border);
+  color: var(--text-main);
+}
+
+.chat-table tr:last-child td {
+  border-bottom: none;
+}
+
+.chat-table tr:nth-child(even) {
+  background: rgba(232, 247, 243, 0.4);
+}

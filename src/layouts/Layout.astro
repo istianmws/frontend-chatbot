@@ -1,0 +1,39 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Chatbot CS - RS PKU Muhammadiyah Grabag",
+  description = "Layanan informasi customer service cerdas 24 jam RS PKU Muhammadiyah Grabag seputar jadwal dokter, layanan poli, alur pendaftaran BPJS, dan IGD."
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="generator" content={Astro.generator} />
+
+  <!-- Primary Meta Tags -->
+  <title>{title}</title>
+  <meta name="title" content={title} />
+  <meta name="description" content={description} />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#0D7C66" />
+</head>
+<body>
+  <slot />
+</body>
+</html>

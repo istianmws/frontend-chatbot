@@ -1,0 +1,658 @@
+---
+import { polyclinics, registrationProcedures, hospitalInfo } from '../data/hospitalData.js';
+---
+
+<div id="quick-info-modal" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title-group">
+        <div class="modal-icon-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title">Panduan & Jadwal RS PKU Grabag</h2>
+          <p class="modal-subtitle">Informasi lengkap poliklinik, alur pendaftaran, dan kontak darurat</p>
+        </div>
+      </div>
+      <button id="btn-close-modal" class="btn-close" aria-label="Tutup Panduan">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Tabs with Clean Icon Padding -->
+    <div class="modal-tabs">
+      <button class="tab-btn active" data-target="tab-jadwal">
+        <svg class="tab-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+          <line x1="16" y1="2" x2="16" y2="6"></line>
+          <line x1="8" y1="2" x2="8" y2="6"></line>
+          <line x1="3" y1="10" x2="21" y2="10"></line>
+        </svg>
+        <span>Jadwal Poli</span>
+      </button>
+      <button class="tab-btn" data-target="tab-alur">
+        <svg class="tab-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>Alur Pendaftaran</span>
+      </button>
+      <button class="tab-btn" data-target="tab-kontak">
+        <svg class="tab-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>Kontak & IGD</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Tab 1: Jadwal Dokter & Poli -->
+      <div id="tab-jadwal" class="tab-pane active">
+        <div class="poli-grid">
+          {polyclinics.map((poli) => (
+            <div class="poli-card">
+              <div class="poli-header">
+                <div class="poli-title-row">
+                  <div class="poli-avatar-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                  </div>
+                  <h3 class="poli-name">{poli.name}</h3>
+                </div>
+                <div class="poli-badge-container">
+                  <span class="poli-badge">{poli.days}</span>
+                  <span class="poli-hours-badge">⏰ {poli.hours}</span>
+                </div>
+              </div>
+              <p class="poli-desc">{poli.description}</p>
+              <div class="doctor-list">
+                <div class="doctor-list-header">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                  </svg>
+                  <strong>Dokter Praktik:</strong>
+                </div>
+                <ul>
+                  {poli.doctors.map((doc) => (
+                    <li>
+                      <span class="doc-name">{doc.name}</span>
+                      <span class="doc-time">{doc.schedule}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Tab 2: Alur Pendaftaran -->
+      <div id="tab-alur" class="tab-pane">
+        <div class="flow-sections">
+          <div class="flow-card">
+            <h3 class="flow-title">🔹 Alur Pasien BPJS Kesehatan</h3>
+            <ol class="flow-list">
+              {registrationProcedures.bpjs.map((step) => (
+                <li set:html={step.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+              ))}
+            </ol>
+          </div>
+
+          <div class="flow-card">
+            <h3 class="flow-title">🔹 Alur Pasien Umum / Asuransi Swasta</h3>
+            <ol class="flow-list">
+              {registrationProcedures.umum.map((step) => (
+                <li set:html={step.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+              ))}
+            </ol>
+          </div>
+
+          <div class="flow-card highlight">
+            <h3 class="flow-title">📱 Booking & Pendaftaran Online (H-1)</h3>
+            <ol class="flow-list">
+              {registrationProcedures.online.map((step) => (
+                <li set:html={step.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')} />
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Kontak & IGD -->
+      <div id="tab-kontak" class="tab-pane">
+        <div class="contact-grid">
+          <div class="contact-card emergency">
+            <div class="contact-card-icon">🚨</div>
+            <h4>IGD 24 Jam</h4>
+            <p>Penanganan gawat darurat medis cepat</p>
+            <a href={`tel:${hospitalInfo.emergencyPhone.replace(/[^0-9]/g, '')}`} class="contact-link emergency">
+              {hospitalInfo.emergencyPhone}
+            </a>
+          </div>
+
+          <div class="contact-card ambulance">
+            <div class="contact-card-icon">🚑</div>
+            <h4>Ambulans Siaga</h4>
+            <p>Layanan jemput pasien gawat darurat</p>
+            <a href={`https://wa.me/62${hospitalInfo.emergencyWhatsapp.replace(/[^0-9]/g, '').slice(1)}`} target="_blank" class="contact-link ambulance">
+              {hospitalInfo.emergencyWhatsapp}
+            </a>
+          </div>
+
+          <div class="contact-card cs">
+            <div class="contact-card-icon">💬</div>
+            <h4>Customer Service WA</h4>
+            <p>Informasi & pendaftaran online</p>
+            <a href={`https://wa.me/62${hospitalInfo.whatsappCS.replace(/[^0-9]/g, '').slice(1)}`} target="_blank" class="contact-link cs">
+              {hospitalInfo.whatsappCS}
+            </a>
+          </div>
+
+          <div class="contact-card address">
+            <div class="contact-card-icon">📍</div>
+            <h4>Lokasi Rumah Sakit</h4>
+            <p>{hospitalInfo.address}</p>
+            <span class="hours-badge">{hospitalInfo.operationalHours}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-normal);
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 820px;
+    max-height: 88vh;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.98);
+    transition: transform var(--transition-bounce);
+  }
+
+  .modal-overlay.open .modal-card {
+    transform: translateY(0) scale(1);
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--surface-border);
+    background: var(--surface-card-subtle);
+  }
+
+  .modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .modal-icon-badge {
+    width: 44px;
+    height: 44px;
+    background: var(--primary-100);
+    color: var(--primary-700);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .modal-title {
+    font-size: 1.15rem;
+    color: var(--primary-800);
+    margin: 0;
+    font-weight: 800;
+  }
+
+  .modal-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: 2px 0 0 0;
+  }
+
+  .btn-close {
+    background: transparent;
+    border: 1px solid var(--surface-border);
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+  }
+
+  .btn-close:hover {
+    background: var(--accent-red-light);
+    border-color: #fca5a5;
+    color: var(--accent-red);
+  }
+
+  /* Modal Tabs */
+  .modal-tabs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--surface-border);
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    background: var(--surface-card-subtle);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .tab-icon {
+    flex-shrink: 0;
+  }
+
+  .tab-btn:hover {
+    background: var(--primary-50);
+    color: var(--primary-700);
+    border-color: var(--primary-300);
+  }
+
+  .tab-btn.active {
+    background: var(--primary-500);
+    color: #ffffff;
+    border-color: var(--primary-500);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    background: #f8fafc;
+  }
+
+  .tab-pane {
+    display: none;
+  }
+
+  .tab-pane.active {
+    display: block;
+    animation: fadeIn var(--transition-normal);
+  }
+
+  /* Poli Grid */
+  .poli-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 18px;
+  }
+
+  .poli-card {
+    background: #ffffff;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .poli-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-200);
+  }
+
+  .poli-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border-bottom: 1px solid var(--surface-border-subtle);
+    padding-bottom: 10px;
+  }
+
+  .poli-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .poli-avatar-box {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-50);
+    border: 1px solid var(--primary-200);
+    color: var(--primary-700);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .poli-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary-800);
+    margin: 0;
+  }
+
+  .poli-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .poli-badge {
+    background: var(--primary-100);
+    color: var(--primary-800);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+  }
+
+  .poli-hours-badge {
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+  }
+
+  .poli-desc {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .doctor-list {
+    margin-top: auto;
+    padding-top: 8px;
+    font-size: 0.825rem;
+  }
+
+  .doctor-list-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary-800);
+    margin-bottom: 8px;
+  }
+
+  .doctor-list ul {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .doctor-list li {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-card-subtle);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--surface-border);
+  }
+
+  .doc-name {
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 0.85rem;
+  }
+
+  .doc-time {
+    color: var(--primary-600);
+    font-size: 0.775rem;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* Flow Section */
+  .flow-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .flow-card {
+    background: #ffffff;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-lg);
+    padding: 18px 22px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .flow-card.highlight {
+    background: var(--primary-50);
+    border-color: var(--primary-200);
+  }
+
+  .flow-title {
+    font-size: 1rem;
+    color: var(--primary-800);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .flow-list {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.875rem;
+  }
+
+  .flow-list li {
+    line-height: 1.55;
+    color: var(--text-main);
+  }
+
+  /* Contact Grid */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .contact-card {
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--surface-border);
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .contact-card-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .contact-card h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .contact-card p {
+    font-size: 0.825rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .contact-link {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all var(--transition-fast);
+  }
+
+  .contact-link.emergency {
+    background: var(--accent-red-light);
+    color: var(--accent-red);
+  }
+
+  .contact-link.emergency:hover {
+    background: var(--accent-red);
+    color: #ffffff;
+  }
+
+  .contact-link.ambulance {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .contact-link.ambulance:hover {
+    background: #16a34a;
+    color: #ffffff;
+  }
+
+  .contact-link.cs {
+    background: var(--primary-100);
+    color: var(--primary-700);
+  }
+
+  .contact-link.cs:hover {
+    background: var(--primary-600);
+    color: #ffffff;
+  }
+
+  .hours-badge {
+    margin-top: 8px;
+    font-size: 0.775rem;
+    color: var(--primary-700);
+    font-weight: 600;
+  }
+
+  @media (max-width: 640px) {
+    .modal-header, .modal-tabs, .modal-body {
+      padding: 14px 16px;
+    }
+    .poli-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  // Modal Interactions
+  const modal = document.getElementById('quick-info-modal');
+  const btnOpen = document.getElementById('btn-open-quick-info');
+  const btnClose = document.getElementById('btn-close-modal');
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabPanes = document.querySelectorAll('.tab-pane');
+
+  function openModal() {
+    if (modal) {
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeModal() {
+    if (modal) {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+  }
+
+  if (btnOpen) btnOpen.addEventListener('click', openModal);
+  if (btnClose) btnClose.addEventListener('click', closeModal);
+
+  // Close on outside click
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+  }
+
+  // Tab Switching
+  tabBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      
+      tabBtns.forEach(b => b.classList.remove('active'));
+      tabPanes.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const targetPane = document.getElementById(targetId || '');
+      if (targetPane) targetPane.classList.add('active');
+    });
+  });
+
+  // Listen to custom open event
+  window.addEventListener('open-quick-info', openModal);
+</script>

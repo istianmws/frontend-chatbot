@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <rect width="48" height="48" rx="12" fill="#0D7C66" />
+  <circle cx="24" cy="24" r="18" fill="#0B6856" />
+  <!-- Crescent & Sun / Islamic Medical Cross Emblem -->
+  <path d="M24 12v24M12 24h24" stroke="#ffffff" stroke-width="4.5" stroke-linecap="round" />
+  <circle cx="24" cy="24" r="5" fill="#F59E0B" />
+</svg>
