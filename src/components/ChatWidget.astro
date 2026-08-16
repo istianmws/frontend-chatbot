@@ -109,14 +109,62 @@ import { quickSuggestions } from '../data/hospitalData.js';
     </div>
   </div>
 
-  <!-- Input Form Area -->
+  <!-- Input Form Area with Multimodal Controls -->
   <div class="chat-input-area">
+    <!-- Hidden File Input for Image/Audio/PDF -->
+    <input
+      type="file"
+      id="file-input"
+      accept="image/*,audio/*,video/*,application/pdf"
+      style="display: none;"
+    />
+
+    <!-- Attachment Preview Strip (Hidden by default) -->
+    <div id="attachment-preview-bar" class="attachment-preview-bar" style="display: none;">
+      <div class="attachment-info">
+        <div id="attachment-thumb" class="attachment-thumb"></div>
+        <div class="attachment-details">
+          <span id="attachment-name" class="attachment-name"></span>
+          <span id="attachment-size" class="attachment-size"></span>
+        </div>
+      </div>
+      <button type="button" id="btn-remove-attachment" class="btn-remove-attachment" title="Hapus Lampiran">✕</button>
+    </div>
+
+    <!-- Voice Note Recording Bar (Hidden by default) -->
+    <div id="voice-recording-bar" class="voice-recording-bar" style="display: none;">
+      <span class="recording-pulse-dot"></span>
+      <span id="recording-timer" class="recording-timer">00:00</span>
+      <span class="recording-label">Merekam Suara Pasien...</span>
+      <div class="recording-actions">
+        <button type="button" id="btn-cancel-recording" class="btn-recording-cancel">Batal</button>
+        <button type="button" id="btn-stop-recording" class="btn-recording-stop">Selesai ✓</button>
+      </div>
+    </div>
+
     <form id="chat-form" class="chat-form" onsubmit="return false;">
+      <!-- Action: Attach File (Image, PDF, Audio) -->
+      <button type="button" id="btn-attach-file" class="btn-input-action" title="Lampirkan Foto / Rujukan / Dokumen / Audio" aria-label="Lampirkan File">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+        </svg>
+      </button>
+
+      <!-- Action: Voice Note Recorder -->
+      <button type="button" id="btn-voice-record" class="btn-input-action" title="Rekam Suara (Voice Note)" aria-label="Rekam Suara Pasien">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+      </button>
+
       <div class="input-wrapper">
         <textarea
           id="chat-input"
           class="chat-textarea"
-          placeholder="Ketik pertanyaan Anda di sini... (contoh: Jadwal dokter anak hari apa?)"
+          placeholder="Ketik pertanyaan atau lampirkan foto surat rujukan/BPJS/suara..."
           rows="1"
           required
           aria-label="Pesan Chat"
@@ -131,7 +179,7 @@ import { quickSuggestions } from '../data/hospitalData.js';
       </button>
     </form>
     <div class="input-footer">
-      <span class="privacy-note">🔒 Layanan CS Resmi RS PKU Grabag • Tanggapan cepat berbasis AI</span>
+      <span class="privacy-note">🔒 Mendukung Teks, Foto Surat Rujukan/BPJS, Voice Note Suara, & PDF</span>
       <span class="char-counter" id="char-counter">0 / 500</span>
     </div>
   </div>
@@ -473,22 +521,162 @@ import { quickSuggestions } from '../data/hospitalData.js';
     margin-top: -6px;
   }
 
-  /* Input Area */
+  /* Input Area & Multimodal Controls */
   .chat-input-area {
-    padding: 12px 18px 14px 18px;
+    padding: 10px 18px 14px 18px;
     background: #ffffff;
     border-top: 1px solid var(--surface-border);
     flex-shrink: 0;
+    position: relative;
+  }
+
+  /* Attachment Preview Strip */
+  .attachment-preview-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface-card-subtle);
+    border: 1px solid var(--primary-200);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    animation: fadeIn var(--transition-fast);
+  }
+
+  .attachment-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .attachment-thumb {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+  }
+
+  .attachment-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .attachment-details {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .attachment-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 280px;
+  }
+
+  .attachment-size {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+  }
+
+  .btn-remove-attachment {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .btn-remove-attachment:hover {
+    background: var(--accent-red-light);
+    color: var(--accent-red);
+  }
+
+  /* Voice Recording Bar */
+  .voice-recording-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    background: #fef2f2;
+    border: 1.5px solid #fecdd3;
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+    animation: fadeIn var(--transition-fast);
+  }
+
+  .recording-pulse-dot {
+    width: 10px;
+    height: 10px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulseGlow 1.2s infinite;
+  }
+
+  .recording-timer {
+    font-family: monospace;
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #b91c1c;
+  }
+
+  .recording-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #991b1b;
+    flex: 1;
+  }
+
+  .recording-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-recording-cancel {
+    background: transparent;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+  }
+
+  .btn-recording-stop {
+    background: #dc2626;
+    border: none;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
   }
 
   .chat-form {
     display: flex;
     align-items: flex-end;
-    gap: 10px;
+    gap: 8px;
     background: var(--surface-card-subtle);
     border: 1.5px solid var(--surface-border);
     border-radius: var(--radius-lg);
-    padding: 6px 8px 6px 14px;
+    padding: 6px 8px 6px 10px;
     transition: all var(--transition-fast);
   }
 
@@ -496,6 +684,27 @@ import { quickSuggestions } from '../data/hospitalData.js';
     border-color: var(--primary-500);
     background: #ffffff;
     box-shadow: 0 0 0 3px rgba(13, 124, 102, 0.12);
+  }
+
+  .btn-input-action {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: transparent;
+    border: none;
+    color: var(--primary-700);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+  }
+
+  .btn-input-action:hover {
+    background: var(--primary-100);
+    color: var(--primary-900);
+    transform: scale(1.05);
   }
 
   .input-wrapper {
@@ -547,6 +756,53 @@ import { quickSuggestions } from '../data/hospitalData.js';
     cursor: not-allowed;
   }
 
+  /* File attachment in bubble */
+  .msg-media-preview {
+    margin-bottom: 8px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .msg-img-thumb {
+    max-width: 240px;
+    max-height: 200px;
+    border-radius: var(--radius-md);
+    display: block;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform var(--transition-fast);
+  }
+
+  .msg-img-thumb:hover {
+    transform: scale(1.02);
+  }
+
+  .msg-audio-player {
+    width: 100%;
+    max-width: 260px;
+    height: 38px;
+    border-radius: var(--radius-full);
+    outline: none;
+  }
+
+  .msg-file-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 5px 10px;
+    border-radius: var(--radius-md);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .bot-bubble .msg-file-pill {
+    background: var(--surface-bg);
+    border-color: var(--surface-border);
+    color: var(--text-main);
+  }
+
   .input-footer {
     display: flex;
     align-items: center;
@@ -590,17 +846,46 @@ import { quickSuggestions } from '../data/hospitalData.js';
   const charCounter = document.getElementById('char-counter') as HTMLSpanElement;
   const welcomeTime = document.getElementById('welcome-time') as HTMLSpanElement;
 
+  // Multimodal Attachment Elements
+  const fileInput = document.getElementById('file-input') as HTMLInputElement;
+  const btnAttachFile = document.getElementById('btn-attach-file') as HTMLButtonElement;
+  const btnVoiceRecord = document.getElementById('btn-voice-record') as HTMLButtonElement;
+  const previewBar = document.getElementById('attachment-preview-bar') as HTMLDivElement;
+  const previewThumb = document.getElementById('attachment-thumb') as HTMLDivElement;
+  const previewName = document.getElementById('attachment-name') as HTMLSpanElement;
+  const previewSize = document.getElementById('attachment-size') as HTMLSpanElement;
+  const btnRemoveAttachment = document.getElementById('btn-remove-attachment') as HTMLButtonElement;
+
+  // Voice Recording Elements
+  const voiceBar = document.getElementById('voice-recording-bar') as HTMLDivElement;
+  const recordingTimer = document.getElementById('recording-timer') as HTMLSpanElement;
+  const btnCancelRecording = document.getElementById('btn-cancel-recording') as HTMLButtonElement;
+  const btnStopRecording = document.getElementById('btn-stop-recording') as HTMLButtonElement;
+
+  interface AttachedFile {
+    base64: string;
+    mimeType: string;
+    name: string;
+    sizeFormatted: string;
+  }
+
+  let currentAttachment: AttachedFile | null = null;
+  let mediaRecorder: MediaRecorder | null = null;
+  let audioChunks: Blob[] = [];
+  let recordingInterval: any = null;
+  let recordingSeconds = 0;
+
   // Set initial time
   if (welcomeTime) {
     welcomeTime.textContent = new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit' }).format(new Date());
   }
 
-  // API Backend URL (Express localhost:5000 fallback to relative /api/chat)
+  // API Backend URL
   let API_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5000/api/chat'
     : '/api/chat';
 
-  // Initial Server Health Check (checks port 5000 first, then 3000)
+  // Initial Server Health Check
   async function checkServerHealth() {
     if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') return;
 
@@ -623,6 +908,165 @@ import { quickSuggestions } from '../data/hospitalData.js';
   }
   checkServerHealth();
 
+  // Helper format file size
+  function formatBytes(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  // Set Current Attachment and Show Preview
+  function setAttachment(fileData: AttachedFile | null) {
+    currentAttachment = fileData;
+    if (fileData) {
+      if (previewBar) previewBar.style.display = 'flex';
+      if (previewName) previewName.textContent = fileData.name;
+      if (previewSize) previewSize.textContent = fileData.sizeFormatted;
+
+      if (previewThumb) {
+        if (fileData.mimeType.startsWith('image/')) {
+          previewThumb.innerHTML = `<img src="${fileData.base64}" alt="Thumb" />`;
+        } else if (fileData.mimeType.startsWith('audio/')) {
+          previewThumb.innerHTML = '🎙️';
+        } else if (fileData.mimeType.includes('pdf')) {
+          previewThumb.innerHTML = '📄';
+        } else {
+          previewThumb.innerHTML = '📎';
+        }
+      }
+      input.focus();
+    } else {
+      if (previewBar) previewBar.style.display = 'none';
+      if (fileInput) fileInput.value = '';
+    }
+  }
+
+  // Process File to Base64
+  function processSelectedFile(file: File) {
+    if (file.size > 20 * 1024 * 1024) {
+      alert('Ukuran file maksimal 20 MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64String = reader.result as string;
+      setAttachment({
+        base64: base64String,
+        mimeType: file.type || 'application/octet-stream',
+        name: file.name,
+        sizeFormatted: formatBytes(file.size)
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // File Input Trigger
+  if (btnAttachFile && fileInput) {
+    btnAttachFile.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+      const files = (e.target as HTMLInputElement).files;
+      if (files && files[0]) {
+        processSelectedFile(files[0]);
+      }
+    });
+  }
+
+  if (btnRemoveAttachment) {
+    btnRemoveAttachment.addEventListener('click', () => setAttachment(null));
+  }
+
+  // Paste Image Handler
+  window.addEventListener('paste', (e: ClipboardEvent) => {
+    if (e.clipboardData && e.clipboardData.items) {
+      for (const item of Array.from(e.clipboardData.items)) {
+        if (item.type.startsWith('image/')) {
+          const blob = item.getAsFile();
+          if (blob) processSelectedFile(blob);
+          break;
+        }
+      }
+    }
+  });
+
+  // Voice Note MediaRecorder Implementation
+  if (btnVoiceRecord) {
+    btnVoiceRecord.addEventListener('click', async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert('Browser Anda belum mendukung perekaman mikrofon audio.');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            audioChunks.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          stream.getTracks().forEach(track => track.stop());
+          clearInterval(recordingInterval);
+
+          if (audioChunks.length > 0) {
+            const audioBlob = new Blob(audioChunks, { type: mediaRecorder?.mimeType || 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = () => {
+              const base64 = reader.result as string;
+              setAttachment({
+                base64,
+                mimeType: audioBlob.type || 'audio/webm',
+                name: `VoiceNote_${new Date().toLocaleTimeString('id-ID').replace(/:/g, '')}.webm`,
+                sizeFormatted: formatBytes(audioBlob.size)
+              });
+            };
+            reader.readAsDataURL(audioBlob);
+          }
+          if (voiceBar) voiceBar.style.display = 'none';
+        };
+
+        mediaRecorder.start();
+        recordingSeconds = 0;
+        if (voiceBar) voiceBar.style.display = 'flex';
+        if (recordingTimer) recordingTimer.textContent = '00:00';
+
+        recordingInterval = setInterval(() => {
+          recordingSeconds++;
+          const mins = Math.floor(recordingSeconds / 60).toString().padStart(2, '0');
+          const secs = (recordingSeconds % 60).toString().padStart(2, '0');
+          if (recordingTimer) recordingTimer.textContent = `${mins}:${secs}`;
+        }, 1000);
+
+      } catch (err: any) {
+        console.error('Microphone error:', err);
+        alert('Tidak dapat mengakses mikrofon.');
+      }
+    });
+  }
+
+  if (btnStopRecording) {
+    btnStopRecording.addEventListener('click', () => {
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+    });
+  }
+
+  if (btnCancelRecording) {
+    btnCancelRecording.addEventListener('click', () => {
+      audioChunks = [];
+      if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+      clearInterval(recordingInterval);
+      if (voiceBar) voiceBar.style.display = 'none';
+    });
+  }
+
   // Format Text with Basic Markdown
   function formatMarkdown(text: string): string {
     let formatted = text
@@ -630,12 +1074,9 @@ import { quickSuggestions } from '../data/hospitalData.js';
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
 
-    // Bold **text**
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    // Italic *text*
     formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
-    // Bullet points lines
     const lines = formatted.split('\n');
     let inList = false;
     const processedLines = lines.map(line => {
@@ -656,10 +1097,7 @@ import { quickSuggestions } from '../data/hospitalData.js';
       }
     });
 
-    if (inList) {
-      processedLines.push('</ul>');
-    }
-
+    if (inList) processedLines.push('</ul>');
     return processedLines.join('');
   }
 
@@ -674,7 +1112,7 @@ import { quickSuggestions } from '../data/hospitalData.js';
   }
 
   // Append user or bot message
-  function appendMessage(sender: 'user' | 'bot', text: string) {
+  function appendMessage(sender: 'user' | 'bot', text: string, attached?: AttachedFile | null) {
     const row = document.createElement('div');
     row.className = `message-row ${sender}-row animate-fade-in`;
 
@@ -694,9 +1132,25 @@ import { quickSuggestions } from '../data/hospitalData.js';
     const bubble = document.createElement('div');
     bubble.className = `msg-bubble ${sender}-bubble`;
 
-    const content = document.createElement('div');
-    content.className = 'msg-content';
-    content.innerHTML = sender === 'bot' ? formatMarkdown(text) : `<p>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`;
+    if (attached) {
+      const mediaBox = document.createElement('div');
+      mediaBox.className = 'msg-media-preview';
+      if (attached.mimeType.startsWith('image/')) {
+        mediaBox.innerHTML = `<img src="${attached.base64}" alt="${attached.name}" class="msg-img-thumb" onclick="window.open(this.src)" />`;
+      } else if (attached.mimeType.startsWith('audio/')) {
+        mediaBox.innerHTML = `<audio src="${attached.base64}" controls class="msg-audio-player"></audio>`;
+      } else {
+        mediaBox.innerHTML = `<div class="msg-file-pill">📄 <span>${attached.name} (${attached.sizeFormatted})</span></div>`;
+      }
+      bubble.appendChild(mediaBox);
+    }
+
+    if (text && text.trim().length > 0) {
+      const content = document.createElement('div');
+      content.className = 'msg-content';
+      content.innerHTML = sender === 'bot' ? formatMarkdown(text) : `<p>${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`;
+      bubble.appendChild(content);
+    }
 
     const meta = document.createElement('div');
     meta.className = 'msg-meta';
@@ -705,12 +1159,9 @@ import { quickSuggestions } from '../data/hospitalData.js';
       ${sender === 'bot' ? `<button class="btn-copy-msg" title="Salin Jawaban" data-text="${encodeURIComponent(text)}">📋 Salin</button>` : ''}
     `;
 
-    bubble.appendChild(content);
     bubble.appendChild(meta);
-
     wrapper.appendChild(senderLabel);
     wrapper.appendChild(bubble);
-
     row.appendChild(avatar);
     row.appendChild(wrapper);
 
@@ -734,7 +1185,7 @@ import { quickSuggestions } from '../data/hospitalData.js';
       } else {
         toggleFallbackBtn.className = 'btn-tool-pill fallback-disabled';
         if (fallbackStatusLabel) fallbackStatusLabel.textContent = 'Fallback: OFF (Pure AI)';
-        appendMessage('bot', '🤖 **Mode AI Murni Aktif (Fallback Dimatikan):** Seluruh respons akan diproses langsung oleh Google Gemini API. Jika ada error atau model salah, pesan error asli dari Google akan ditampilkan di chat.');
+        appendMessage('bot', '🤖 **Mode AI Murni Aktif (Fallback Dimatikan):** Seluruh respons dan file (Foto/Audio/PDF) diproses langsung oleh Google Gemini API.');
       }
     });
   }
@@ -764,9 +1215,9 @@ import { quickSuggestions } from '../data/hospitalData.js';
         }
 
         if (data.success) {
-          appendMessage('bot', `✅ **Koneksi Google Gemini Berhasil!**\n\n• **Model:** \`${data.model}\`\n• **Tes Respons AI:**\n> "${data.reply}"\n\n*API Key Anda aktif dan siap melayani percakapan!*`);
+          appendMessage('bot', `✅ **Koneksi Google Gemini Berhasil!**\n\n• **Model:** \`${data.model}\`\n• **Tes Respons AI:**\n> "${data.reply}"\n\n*API Key & Dukungan Multimodal (Gambar/Audio/PDF) aktif!*`);
         } else {
-          appendMessage('bot', `❌ **Koneksi Google Gemini Gagal:**\n\n• **Model:** \`${data.model || 'unknown'}\`\n• **Pesan Error:**\n\`\`\`\n${data.error}\n\`\`\`\n\n💡 *Tips: Pastikan API Key di backend/.env adalah API Key Google AI Studio (format: AIzaSy...) dan model yang terdaftar.*`);
+          appendMessage('bot', `❌ **Koneksi Google Gemini Gagal:**\n\n• **Model:** \`${data.model || 'unknown'}\`\n• **Pesan Error:**\n\`\`\`\n${data.error}\n\`\`\`\n\n💡 *Tips: Pastikan API Key di backend/.env sudah diisi.*`);
         }
       } catch (err: any) {
         if (typingIndicator) {
@@ -781,15 +1232,18 @@ import { quickSuggestions } from '../data/hospitalData.js';
   // Send Message Logic
   async function handleSendMessage(textToSend?: string) {
     const rawMessage = textToSend !== undefined ? textToSend : input.value.trim();
-    if (!rawMessage) return;
+    const fileToSend = currentAttachment;
 
-    // Clear input
+    if (!rawMessage && !fileToSend) return;
+
+    // Clear input & attachment
     input.value = '';
     input.style.height = 'auto';
+    setAttachment(null);
     updateCharCount();
 
     // Append User Message
-    appendMessage('user', rawMessage);
+    appendMessage('user', rawMessage, fileToSend);
 
     // Show Typing Indicator
     if (typingIndicator) {
@@ -798,20 +1252,23 @@ import { quickSuggestions } from '../data/hospitalData.js';
       scrollToBottom();
     }
 
-    // Disable input while processing
     input.disabled = true;
     sendBtn.disabled = true;
 
     try {
-      // 1. Attempt to call Backend API (Express /api/chat)
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: rawMessage,
+          file: fileToSend ? {
+            base64: fileToSend.base64,
+            mimeType: fileToSend.mimeType,
+            name: fileToSend.name
+          } : undefined,
           disable_fallback: !isFallbackEnabled
         }),
-        signal: AbortSignal.timeout(10000) // 10 seconds timeout
+        signal: AbortSignal.timeout(20000)
       });
 
       let botReply = '';
@@ -824,7 +1281,6 @@ import { quickSuggestions } from '../data/hospitalData.js';
         throw new Error(`HTTP Error: ${response.status}`);
       }
 
-      // Hide typing before appending reply
       if (typingIndicator) {
         typingIndicator.style.display = 'none';
         typingIndicator.remove();
@@ -838,23 +1294,19 @@ import { quickSuggestions } from '../data/hospitalData.js';
       }
 
       if (!isFallbackEnabled) {
-        // When Fallback is disabled by user, show the exact network error
         if (statusDot) statusDot.style.background = '#EF4444';
         if (statusText) statusText.textContent = 'Koneksi Error';
         appendMessage('bot', `⚠️ **[Error Koneksi Backend / API]**\n\nTidak dapat menghubungi backend API pada \`${API_ENDPOINT}\`.\n\`\`\`\n${err.message}\n\`\`\``);
       } else {
-        // Fallback: If backend is offline or during testing, use smart offline knowledge engine
         console.warn('Backend API not reachable, switching to local RS knowledge engine:', err);
         if (statusDot) statusDot.style.background = '#F59E0B';
         if (statusText) statusText.textContent = 'Mode Cerdas Offline';
 
-        // Simulate realistic typing delay
         await new Promise((res) => setTimeout(res, 600));
-        const fallbackReply = getOfflineReply(rawMessage);
+        const fallbackReply = getOfflineReply(rawMessage || (fileToSend ? 'lampiran' : ''));
         appendMessage('bot', fallbackReply);
       }
     } finally {
-      // Ensure typing is hidden and reset input
       if (typingIndicator) {
         typingIndicator.style.display = 'none';
         typingIndicator.remove();
@@ -874,7 +1326,6 @@ import { quickSuggestions } from '../data/hospitalData.js';
     });
   }
 
-  // Keydown Enter (Enter sends, Shift+Enter makes newline)
   if (input) {
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
@@ -883,7 +1334,6 @@ import { quickSuggestions } from '../data/hospitalData.js';
       }
     });
 
-    // Auto resize textarea height
     input.addEventListener('input', () => {
       input.style.height = 'auto';
       input.style.height = `${Math.min(input.scrollHeight, 120)}px`;
@@ -895,22 +1345,16 @@ import { quickSuggestions } from '../data/hospitalData.js';
     if (charCounter && input) {
       const len = input.value.length;
       charCounter.textContent = `${len} / 500`;
-      if (len > 450) {
-        charCounter.style.color = 'var(--accent-red)';
-      } else {
-        charCounter.style.color = 'var(--text-muted)';
-      }
+      charCounter.style.color = (len > 450) ? 'var(--accent-red)' : 'var(--text-muted)';
     }
   }
 
-  // Quick Prompt Chips Click
+  // Quick Prompt Chips
   const quickButtons = document.querySelectorAll('.quick-prompt-btn');
   quickButtons.forEach((btn) => {
     btn.addEventListener('click', () => {
       const query = btn.getAttribute('data-query');
-      if (query) {
-        handleSendMessage(query);
-      }
+      if (query) handleSendMessage(query);
     });
   });
 
@@ -918,7 +1362,6 @@ import { quickSuggestions } from '../data/hospitalData.js';
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
       if (confirm('Bersihkan riwayat obrolan?')) {
-        // Keep initial welcome message
         const allRows = messagesContainer.querySelectorAll('.message-row:not(:first-child)');
         allRows.forEach(row => row.remove());
         if (typingIndicator) typingIndicator.style.display = 'none';
@@ -926,7 +1369,7 @@ import { quickSuggestions } from '../data/hospitalData.js';
     });
   }
 
-  // Copy Message Listener Delegation
+  // Copy Message Listener
   if (messagesContainer) {
     messagesContainer.addEventListener('click', async (e) => {
       const target = (e.target as HTMLElement).closest('.btn-copy-msg') as HTMLButtonElement;
@@ -938,12 +1381,8 @@ import { quickSuggestions } from '../data/hospitalData.js';
             await navigator.clipboard.writeText(text);
             const originalHTML = target.innerHTML;
             target.innerHTML = '✅ Tersalin!';
-            setTimeout(() => {
-              target.innerHTML = originalHTML;
-            }, 1800);
-          } catch (err) {
-            console.error('Failed to copy', err);
-          }
+            setTimeout(() => { target.innerHTML = originalHTML; }, 1800);
+          } catch (err) { console.error('Failed to copy', err); }
         }
       }
     });

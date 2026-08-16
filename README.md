@@ -46,8 +46,12 @@ frontend/
 
 ## 🌟 Fitur Utama Frontend
 
-1. **Tata Letak Chat Kanan-Kiri & Bubble Visual**:
-   - **User (Kanan)**: Bubble gradien emerald green dengan teks putih kontras, label `Anda (Pasien) 👤`, dan avatar pasien di sisi kanan.
+1. **Dukungan Penuh Multimodal (Foto, Suara, PDF)**:
+   - **Upload Foto/Gambar (📎 / 📷)**: Pasien dapat melampirkan foto Surat Rujukan Faskes 1, Kartu BPJS, atau resep obat.
+   - **Voice Note / Rekam Suara Pasien (🎙️)**: Pasien dapat merekam suara pertanyaan langsung dari browser menggunakan mikrofon, ideal bagi pengguna lansia.
+   - **Drag & Drop & Paste (Ctrl+V)**: Mendukung drop file langsung atau paste screenshot.
+2. **Tata Letak Chat Kanan-Kiri & Bubble Visual**:
+   - **User (Kanan)**: Bubble gradien emerald green dengan teks putih kontras, thumbnail foto lampiran / player audio, label `Anda (Pasien) 👤`.
    - **CS Virtual (Kiri)**: Bubble putih bersih berborder halus, logo robot CS hijau, label `🌿 CS Virtual RS PKU`, dan tombol `📋 Salin`.
 2. **Indikator Mengetik (*Typing Indicator*)**:
    - Animasi 3 titik bergelombang saat menunggu balasan AI dan hilang otomatis saat balasan tiba.
